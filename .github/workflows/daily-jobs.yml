@@ -1,0 +1,28 @@
+name: Daily jobs
+
+on:
+  schedule:
+    - cron: "0 13 * * *" # ~9am US Eastern; adjust for your timezone
+  workflow_dispatch: {}
+
+jobs:
+  snapshot-and-purge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run prisma:generate
+      - run: npm run worker:snapshot-prices
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          POSHMARK_SESSION_STATE_PATH: ${{ secrets.POSHMARK_SESSION_STATE_PATH }}
+          MERCARI_SESSION_STATE_PATH: ${{ secrets.MERCARI_SESSION_STATE_PATH }}
+          VINTED_SESSION_STATE_PATH: ${{ secrets.VINTED_SESSION_STATE_PATH }}
+          DEPOP_SESSION_STATE_PATH: ${{ secrets.DEPOP_SESSION_STATE_PATH }}
+          EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
+          EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
+          EBAY_REFRESH_TOKEN: ${{ secrets.EBAY_REFRESH_TOKEN }}

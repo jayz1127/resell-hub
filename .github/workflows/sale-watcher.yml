@@ -1,0 +1,36 @@
+name: Sale watcher
+
+# Free and unlimited on a public repo. This is the always-on piece that
+# replaces "your computer has to be on" — it runs on GitHub's servers,
+# not yours.
+on:
+  schedule:
+    - cron: "*/5 * * * *" # every 5 minutes
+  workflow_dispatch: {} # lets you trigger a run manually from the Actions tab
+
+jobs:
+  watch-and-delist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run prisma:generate
+      - run: npm run worker:gmail-watcher
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+          GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+          GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+          EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
+          EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
+          EBAY_REFRESH_TOKEN: ${{ secrets.EBAY_REFRESH_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          POSHMARK_SESSION_STATE_PATH: ${{ secrets.POSHMARK_SESSION_STATE_PATH }}
+          MERCARI_SESSION_STATE_PATH: ${{ secrets.MERCARI_SESSION_STATE_PATH }}
+          VINTED_SESSION_STATE_PATH: ${{ secrets.VINTED_SESSION_STATE_PATH }}
+          DEPOP_SESSION_STATE_PATH: ${{ secrets.DEPOP_SESSION_STATE_PATH }}
