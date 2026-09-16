@@ -60,8 +60,9 @@ involved in getting delisting to run without your computer on.
   checks Gmail for new sales, calls the eBay API directly for eBay-side
   delisting, and drives a headless Playwright browser for the other four
   platforms.
-- **Fallback / safety net**: a free Telegram bot sends you a push
-  notification the moment a sale is detected. If the automated delist on
+- **Fallback / safety net**: a free push notification (via ntfy.sh — no
+  account needed, just a secret topic name) the moment a sale is
+  detected. If the automated delist on
   a given platform succeeds, you get a confirmation. If it fails (site
   layout changed, login expired, bot-detection blocked it), you get an
   alert telling you exactly which platform still needs a manual delist,
@@ -83,9 +84,9 @@ GitHub Actions worker parses: which item, which platform
         |
         +--> item cross-listed on Poshmark/Mercari/Vinted/Depop?
         |         --> Playwright logs in, deletes the listing
-        |         --> on any failure: Telegram alert "delist X on Y yourself"
+        |         --> on any failure: push alert "delist X on Y yourself"
         |
-        +--> always: Telegram notification of what happened
+        +--> always: push notification of what happened
         |
         v
 database updated: item marked sold, listings marked delisted/error,
@@ -97,8 +98,8 @@ sale record created with platform, price, fees
 This scaffold is real, working code and schema, not a mockup, but it
 can't run itself without a few things only you can provide:
 
-- Free accounts: GitHub, Supabase, Vercel, a Telegram bot (via
-  @BotFather, takes 2 minutes).
+- Free accounts: GitHub, Supabase, Vercel. (No account needed for
+  alerts — just a secret topic name for ntfy.sh.)
 - An eBay developer app (free, tied to your eBay seller account) for the
   real API integration.
 - Login credentials/session cookies for Poshmark, Mercari, Vinted, and

@@ -69,7 +69,7 @@ model Listing {
   status      ListingStatus @default(ACTIVE)
   listedAt    DateTime      @default(now())
   delistedAt  DateTime?
-  lastError   String? // populated when automated delist fails, surfaced via Telegram
+  lastError   String? // populated when automated delist fails, surfaced via push notification
 
   @@unique([itemId, platform])
   @@index([platform, status])

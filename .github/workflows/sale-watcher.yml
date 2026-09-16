@@ -28,8 +28,7 @@ jobs:
           EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
           EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
           EBAY_REFRESH_TOKEN: ${{ secrets.EBAY_REFRESH_TOKEN }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           POSHMARK_SESSION_STATE_PATH: ${{ secrets.POSHMARK_SESSION_STATE_PATH }}
           MERCARI_SESSION_STATE_PATH: ${{ secrets.MERCARI_SESSION_STATE_PATH }}
           VINTED_SESSION_STATE_PATH: ${{ secrets.VINTED_SESSION_STATE_PATH }}

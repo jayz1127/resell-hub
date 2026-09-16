@@ -13,14 +13,14 @@
  *   4. For every OTHER active Listing of that item: delist it — via the
  *      real eBay API if it's eBay, or via the matching Playwright script
  *      otherwise.
- *   5. Send one Telegram notification summarizing what happened,
+ *   5. Send one push notification (ntfy) summarizing what happened,
  *      including anything that needs manual follow-up.
  *   6. Label the email processed so it's never handled twice.
  */
 import { google } from "googleapis";
 import { Platform } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
-import { notify } from "../../lib/telegram";
+import { notify } from "../../lib/notify";
 import { delistEbayOffer } from "../delist-ebay";
 import { SALE_EMAIL_PATTERNS, PROCESSED_LABEL } from "./senderConfig";
 import { delistOnPlatform } from "../platformDelist";

@@ -38,13 +38,14 @@ Everything below is free. Do these in order.
    gives you into that item's Listing row (`externalId`) — that's how
    the auto-delist knows what to withdraw.
 
-## 5. Telegram bot for alerts (free, 2 minutes)
+## 5. Push alerts — no signup at all
 
-1. Message @BotFather on Telegram, send `/newbot`, follow the prompts.
-   You get a `TELEGRAM_BOT_TOKEN`.
-2. Message your new bot anything once, then visit
-   `https://api.telegram.org/bot<token>/getUpdates` in a browser to find
-   your `chat.id` → that's `TELEGRAM_CHAT_ID`.
+1. Pick a hard-to-guess topic name, like `joshresell-8f2a1c`. That's your
+   `NTFY_TOPIC` — no account needed anywhere.
+2. Open `https://ntfy.sh/joshresell-8f2a1c` (with your real topic name)
+   in your phone's browser and tap "Subscribe," or install the free ntfy
+   app and subscribe there. That's it — that's the whole setup for
+   alerts.
 
 ## 6. GitHub Actions secrets
 
@@ -65,7 +66,7 @@ actual logged-in accounts, which means I need either direct access to
 try it live or real HTML from those pages once you're logged in. This
 is also the moment to decide, platform by platform, whether the ToS
 risk described in ARCHITECTURE.md is one you want to carry for that
-platform, or whether you'd rather leave it on "Telegram alert, you
+platform, or whether you'd rather leave it on "push alert, you
 tap delist" for that one specifically. Tell me which platforms you
 want to push forward on and I'll build out the real automation for
 those next.
