@@ -19,8 +19,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         >
           <a href="/dashboard">Dashboard</a>
           <a href="/inventory">Inventory</a>
-          <a href="/purchases">Purchases</a>
-          <a href="/sales">Sales</a>
+          <a href="/purchases-sales">Purchases/Sales</a>
+          <a href="/data">Data</a>
         </nav>
         <main style={{ padding: "1.5rem", maxWidth: 960, margin: "0 auto" }}>
           {children}
