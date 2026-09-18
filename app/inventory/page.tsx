@@ -12,6 +12,9 @@ export default async function InventoryPage() {
   return (
     <div>
       <h1>Active inventory</h1>
+      <p style={{ color: "#666" }}>
+        Add new items from the <a href="/purchases">Purchases</a> page, they show up here once you mark them as listed on a platform.
+      </p>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr style={{ textAlign: "left", borderBottom: "1px solid #ddd" }}>
