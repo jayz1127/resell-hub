@@ -1,4 +1,127 @@
 // Resell Hub database schema
+// Postgres, via Supabase free tier. The tables are created by running
+// schema.sql once in Supabase's SQL Editor (see SETUP.md) — this file
+// is what the app's Prisma Client reads to know the shape of the data.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL") // pooled connection, used at runtime
+  directUrl = env("DIRECT_URL") // direct connection, only used if you ever run `prisma migrate`
+}
+
+enum SourceType {
+  PURCHASED // has a real cost basis
+  HAND_ME_DOWN // no cost basis — excluded from "real" profit margin
+}
+
+enum ItemStatus {
+  ACTIVE
+  SOLD
+  ARCHIVED
+}
+
+enum Platform {
+  EBAY
+  POSHMARK
+  MERCARI
+  VINTED
+  DEPOP
+}
+
+enum ListingStatus {
+  ACTIVE
+  SOLD
+  DELISTED
+  ERROR // automation tried to delist and failed — needs manual action
+}
+
+model Item {
+  id          String     @id @default(cuid())
+  name        String
+  brand       String?
+  category    String?
+  sku         String?    @unique
+  sourceType  SourceType
+  costBasis   Float? // null for hand-me-downs; required (enforced in app logic) for PURCHASED
+  acquiredAt  DateTime?
+  notes       String?
+  description String? // full listing description, pulled in from Flyp for active listings
+  images      String[] @default([]) // hotlinked image URLs (Flyp's CDN, or wherever you add from)
+  status      ItemStatus @default(ACTIVE)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  listings      Listing[]
+  sales         Sale[]
+  priceHistory  PriceSnapshot[]
+
+  @@index([status])
+  @@index([sourceType])
+}
+
+model Listing {
+  id          String        @id @default(cuid())
+  itemId      String
+  item        Item          @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  platform    Platform
+  externalId  String? // the platform's own listing/offer id, used to delist via API/automation
+  price       Float
+  status      ListingStatus @default(ACTIVE)
+  listedAt    DateTime      @default(now())
+  delistedAt  DateTime?
+  lastError   String? // populated when automated delist fails, surfaced via push notification
+
+  @@unique([itemId, platform])
+  @@index([platform, status])
+}
+
+model Sale {
+  id            String    @id @default(cuid())
+  itemId        String
+  item          Item      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  platform      Platform
+  salePrice     Float
+  platformFee   Float     @default(0)
+  shippingCost  Float     @default(0)
+  soldAt        DateTime
+  createdAt     DateTime  @default(now())
+  deletedAt     DateTime? // soft delete: set on user delete, purged after 30 days by a cleanup job
+                          // this is what Flyp refuses to let you do — see SETUP.md for the purge job
+
+  @@index([platform])
+  @@index([soldAt])
+  @@index([deletedAt])
+}
+
+// One row per item per platform per day — the basis for the price trend
+// feature Flyp doesn't have. A daily cron (see workers/) writes the
+// current asking price for every ACTIVE listing.
+model PriceSnapshot {
+  id          String   @id @default(cuid())
+  itemId      String
+  item        Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  platform    Platform
+  price       Float
+  capturedAt  DateTime @default(now())
+
+  @@index([itemId, capturedAt])
+}
+
+// Tracks connection health per platform so the dashboard can show
+// "Poshmark automation has been failing since Tuesday" instead of
+// silently missing sales.
+model PlatformConnection {
+  id          String    @id @default(cuid())
+  platform    Platform  @unique
+  connected   Boolean   @default(false)
+  lastSyncAt  DateTime?
+  lastError   String?
+}
+// Resell Hub database schema
 // Postgres, via Supabase free tier. Run `npx prisma migrate dev` after
 // setting DATABASE_URL in .env (see SETUP.md).
 
